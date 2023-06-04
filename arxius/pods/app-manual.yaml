@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-manual
+spec:
+  containers:
+  - image: jordiiqb/app
+    name: app
+    ports:
+    - containerPort: 8080
+      protocol: TCP
