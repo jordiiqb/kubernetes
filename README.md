@@ -83,7 +83,7 @@ Després d'instal·lar Minikube, el podem iniciar amb la següent comanda:
 
 > minikube start
 
-'''
+```
 a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube start
 😄  minikube v1.30.1 en Ubuntu 23.04 (vbox/amd64)
 ✨  Controlador docker seleccionado automáticamente
@@ -100,4 +100,4 @@ a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube start
 🔎  Verifying Kubernetes components...
 🌟  Complementos habilitados: default-storageclass, storage-provisioner
 🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
-'''
+```
