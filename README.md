@@ -45,7 +45,7 @@ Podem visualitzar Kubernetes com un sistema construït en capes, amb cada capa m
   
 A la seva base, Kubernetes reuneix les màquines físiques o virtuals individuals en un clúster utilitzant una xarxa compartida per comunicar-se entre cada ordinador. Aquest clúster de Kubernetes és la plataforma física on es configuren tots els components, capacitats i càrregues de treball de Kubernetes.
 
-![3-kub_capes](./arxius/imatges/3-kub_capes.png)
+![3-kub_capes](./arxius/imatges/3-kub_capes.PNG)
  
 Quan es desplega una aplicació a través de Kubernetes, automàticament ell selecciona  
 un ordinador per a cada component de l'aplicació, el desplega i li permet trobar i comunicar-se fàcilment amb altres components de l'aplicació i amb altres aplicacions, entre altres funcions.
@@ -62,3 +62,13 @@ Els Master nodes actuen com el punt principal de contacte amb el clúster i són
 * Els Worker nodes treballen en el que es coneix com a "Workload Plane". "El Workload Plane" és el component de Kubernetes que executa les aplicacions en contenidors i és l'encarregat d'executar, controlar i proporcionar serveis a les aplicacions
 
 ![4-cwplanes](./arxius/imatges/4-cwplanes.PNG)
+
+#### Com es llança una aplicació en Kubernetes?
+
+Per llançar una aplicació en Kubernetes, primer has de containeritzar la teva aplicació i crear una imatge. Després de crear la imatge, has de donar-li a l'API de Kubernetes una descripció de la teva aplicació.
+
+La descripció inclou informació com la imatge o imatges dels components de la teva aplicació, com es relacionen entre ells, quantes còpies ha d'haver-hi, quin nom han de tenir, etc.
+
+Quan l'API processa la descripció de l'aplicació, Kubernetes crea objectes a partir de les imatges de contenidors i els assigna als nodes de treball disponibles.
+
+![5-kubernetes_work](./arxius/imatges/5-kubernetes_work.PNG)
