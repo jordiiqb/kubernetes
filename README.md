@@ -10,8 +10,7 @@
 Kubernetes és un sistema de software de codi obert que serveix per a automatitzar la implementació i gestió de sistemes d'aplicació complexos a gran escala, compostos per processos informàtics que s'executen en contenidors.  
   
 Kubernetes permet executar aplicacions de software en milers de nodes d'ordinadors  
-com si tots aquests nodes fossin un únic i enorme ordinador, fent que s'abstregui la infraestructura subjacent i fent que se simplifiqui el desenvolupament, el desplegament,  
-i la gestió.
+com si tots aquests nodes fossin un únic i enorme ordinador, fent que s'abstregui la infraestructura subjacent i fent que se simplifiqui el desenvolupament, el desplegament i la gestió.
 ### Origen de Kubernetes  
   
 Kubernetes va ser desenvolupat originalment per Google. Google sempre ha executat  
@@ -29,13 +28,6 @@ capità. Un capità és responsable del vaixell, mentre que el timoner és qui e
 El timoner manté el curs del vaixell, porta a terme les ordres donades pel capità i li reporta el transcurs de la nau. Kubernetes dirigeix les aplicacions i reporta sobre el seu estat mentre tu - el capità - decideix on vol que vagi el sistema.
 
 ![2-timoner](./arxius/imatges/2-timoner.jpg)
-
-### Què fa Kubernetes?  
-  
-Kubernetes crea una capa d'abstracció entre l'usuari i tota la infraestructura de hardware fent que no importi sobre quin ordinador llancis la teva aplicació.  
-  
-Quan es desplega una aplicació a través de Kubernetes, automàticament ell selecciona  
-un ordinador per a cada component de l'aplicació, el desplega i li permet trobar i comunicar-se fàcilment amb altres components de l'aplicació o d'altres aplicacions.
 
 ### Què fa Kubernetes?  
   
@@ -84,7 +76,7 @@ Després d'instal·lar Minikube, el podem iniciar amb la següent comanda:
 `minikube start`
 
 ```
-a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube start
+a184311jq@PC:~/kubernetes$ minikube start
 😄  minikube v1.30.1 en Ubuntu 23.04 (vbox/amd64)
 ✨  Controlador docker seleccionado automáticamente
 📌  Using Docker driver with root privileges
@@ -107,7 +99,7 @@ Un cop està Minikube en marxa, podem fer la següent comanda per veure el seu e
 `minikube status`
 
 ```
-a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube status
+a184311jq@PC:~/kubernetes$ minikube status
 minikube
 type: Control Plane
 host: Running
@@ -126,9 +118,9 @@ Si només volem veure la IP del node, hem d'utilitzar la següent comanda:
 `minikube ip`
 
 ```
-a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube node list
+a184311jq@PC:~/kubernetes$ minikube node list
 minikube	192.168.49.2
-a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube ip
+a184311jq@PC:~/kubernetes$ minikube ip
 192.168.49.2
 ```
 
@@ -137,7 +129,7 @@ Finalment, aturem Minikube amb la següent comanda:
 `minikube stop`
 
 ```
-a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube stop
+a184311jq@PC:~/kubernetes$ minikube stop
 ✋  Stopping node "minikube"  ...
 🛑  Apagando "minikube" mediante SSH...
 🛑  1 node stopped.
@@ -212,7 +204,7 @@ kubelet: Running
 
 
 ```
-Aturem els nodes:
+Aturem el clúster:
 
 ```
 a184311jq@PC:~/kubernetes$ minikube stop
