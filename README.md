@@ -44,7 +44,7 @@ Podem visualitzar Kubernetes com un sistema construït en capes, amb cada capa m
   
 A la seva base, Kubernetes reuneix les màquines físiques o virtuals individuals en un clúster utilitzant una xarxa compartida per comunicar-se entre cada ordinador. Aquest clúster de Kubernetes és la plataforma física on es configuren tots els components, capacitats i càrregues de treball de Kubernetes.
 
-![3-kub_capes](./arxius/imatges/3-kub_capes.png)
+![3-kub_capes](./arxius/imatges/3-kub_capes.PNG)
 
   
 Quan es desplega una aplicació a través de Kubernetes, automàticament ell selecciona  
