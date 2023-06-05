@@ -29,3 +29,23 @@ capità. Un capità és responsable del vaixell, mentre que el timoner és qui e
   
 El timoner manté el curs del vaixell, porta a terme les ordres donades pel capità i li reporta el transcurs de la nau. Kubernetes dirigeix les aplicacions i reporta sobre el seu estat mentre tu - el capità - decideix on vol que vagi el sistema.
 ![2-timoner](./arxius/imatges/2-timoner.jpg)
+
+
+#### Què fa Kubernetes?  
+  
+Kubernetes crea una capa d'abstracció entre l'usuari i tota la infraestructura de hardware fent que no importi sobre quin ordinador llancis la teva aplicació.  
+  
+Quan es desplega una aplicació a través de Kubernetes, automàticament ell selecciona  
+un ordinador per a cada component de l'aplicació, el desplega i li permet trobar i comunicar-se fàcilment amb altres components de l'aplicació o d'altres aplicacions.
+
+#### Què fa Kubernetes?  
+  
+Podem visualitzar Kubernetes com un sistema construït en capes, amb cada capa més alta abstraient la complexitat que es troba en els nivells més baixos.  
+  
+A la seva base, Kubernetes reuneix les màquines físiques o virtuals individuals en un clúster utilitzant una xarxa compartida per comunicar-se entre cada ordinador. Aquest clúster de Kubernetes és la plataforma física on es configuren tots els components, capacitats i càrregues de treball de Kubernetes.
+
+![3-kub_capes](./arxius/imatges/3-kub_capes.png)
+
+  
+Quan es desplega una aplicació a través de Kubernetes, automàticament ell selecciona  
+un ordinador per a cada component de l'aplicació, el desplega i li permet trobar i comunicar-se fàcilment amb altres components de l'aplicació i amb altres aplicacions, entre altres funcions.
