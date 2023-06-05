@@ -276,9 +276,38 @@ Per aquest treball, tots els exemples s'han fet mitjançant arxius YAML.
 
 L’API de Kubernetes disposa de diversos objectes que veurem a continuació, i els arxius YAML per cada objecte tenen petites diferencien entre ells, però tots tenen certes parts en comú:
 
-apiVersion:   -> Camp on es diu la versió de l'API de Kubernetes utilitzada per l’objecte
-kind: -> Camp on es diu el tipus d’objecte de l'API de Kubernetes
-metadata: -> Camp on s’especifica el nom de l’objecte, etiquetes, anotacions, etc.
-spec: -> Camp on es diu la imatge del container, els ports, etc.
++ apiVersion:   -> Camp on es diu la versió de l'API de Kubernetes utilitzada per l’objecte
++ kind: -> Camp on es diu el tipus d’objecte de l'API de Kubernetes
++ metadata: -> Camp on s’especifica el nom de l’objecte, etiquetes, anotacions, etc.
++ spec: -> Camp on es diu la imatge del container, els ports, etc.
 
 Més endavant veurem els diferents arxius per cada objecte.
+
+### Quins són els objectes de l'API de Kubernetes?
+
+Mentre que els containers són el mecanisme utilitzat per desplegar aplicacions, Kubernetes utilitza capes addicionals d'abstracció sobre la interfície del container per proporcionar escala, resiliència i funcions de gestió del cicle de vida. En lloc de gestionar els contenidors directament, l'usuari defineix i interactua amb instàncies composades de diversos objectes de Kubernetes.
+
+Per poder treballar amb els diferents objectes de l'API de Kubernetes, he fet servir una app sencilla en Javascript que la seva funció és retornar el hostname de la màquina que està corrent l'aplicació.
+
+> [app.js](./arxius/app/app-base/app.js)
+
+```
+const http = require('http');
+const os = require('os');
+console.log("App server starting...");
+var handler = function(request, response) {
+console.log("Received request from " + request.connection.remoteAddress);
+response.writeHead(200);
+response.end("You've hit " + os.hostname() + "\n");
+};
+var www = http.createServer(handler);
+www.listen(8080);
+```
+
+#### Què és un Pod?
+
+#### Què són un Replication Controller i un Replica Set?
+
+#### Què és un Service?
+
+#### Què és un Deployment?
