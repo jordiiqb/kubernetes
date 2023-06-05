@@ -622,6 +622,29 @@ Els Replication Sets són una evolució dels Replication Controllers, ja que per
 
 #### Què és un Service?
 
+Com hem vist anteriorment, els Pods només són accesibles desde dins del clúster i també hem vist que hi ha vegades que hi ha moltes rèpliques d'un mateix pod fetn correr la mateixa aplicació.
+
+L'objecte Service és un objecte de l'API de Kubernetes que crea un únic i constant punt d'entrada per a tots els mateixos pods d'un tipus, únificant l'accés a tots els pods en un sol objecte.
+
+Existeixen diferents tipus d'objectes Service, però en aquest projecte veurem dos:
+
++ ClusterIP
++ NodePort
+
+El objecte Service de tipus Cluster IP és l'objecte Service que es crea per defecte en Kubernetes i és el que només enruta cap a dins del propi clúster.
+
+En canvi, l'objecte Service de tipus NodePort permet poder atacar als pods desde fora del clúster, ja que el que fa és obrir un port estàtic en cada node del clúster i enruta el tràfic als pods.
+
+Per exemple, en la següent imatge, l'objecte "Backend Service" és del tipus "ClusterIP" mentres que l'objecte "Frontend Service" és de tipus NodePort.
+
+![10-services](./arxius/imatges/10-services.png)
+
+En la següent imatge podem veure clarament com funciona un objecte Service de tipus NodePort:
+
+![11-svc_nd](./arxius/imatges/11-svc_nd.PNG)
+
+
+
 ---
 
 #### Què és un Deployment?
