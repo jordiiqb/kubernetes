@@ -234,6 +234,8 @@ a184311jq@PC:~/kubernetes$ minikube stop
 🛑  2 nodes stopped.
 ```
 
+---
+
 ### Què és `kubectl` ?
 
 'kubectl' és l'eina de CLI que ofereix Kubernetes perquè els usuaris interactuïn amb el Control Plane mitjançant l'API de Kubernetes.
@@ -268,6 +270,7 @@ Totes les ordres per interactuar amb l'API de Kubernetes es poden fer per CLI, p
 
 Per aquest treball, tots els exemples s'han fet mitjançant arxius YAML.
 
+
 #### Quines són les característiques d’un arxiu YAML d’objecte API Kubernetes?
 
 L’API de Kubernetes disposa de diversos objectes que veurem a continuació, i els arxius YAML per cada objecte tenen petites diferencien entre ells, però tots tenen certes parts en comú:
@@ -278,6 +281,8 @@ L’API de Kubernetes disposa de diversos objectes que veurem a continuació, i 
 + spec: -> Camp on es diu la imatge del container, els ports, etc.
 
 Més endavant veurem els diferents arxius per cada objecte.
+
+---
 
 ### Quins són els objectes de l'API de Kubernetes?
 
@@ -299,6 +304,8 @@ response.end("You've hit " + os.hostname() + "\n");
 var www = http.createServer(handler);
 www.listen(8080);
 ```
+
+---
 
 #### Què és un Pod?
 
@@ -409,6 +416,8 @@ a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl delete pod app-
 pod "app-manual" deleted
 ```
 
+---
+
 #### Què són un Replication Controller i un Replica Set?
 
 Els pods són objectes que es van pensar per ser efímers. A vegades un pod pot fallar degut a un bug o un problema propi del node i no és viable haber d'estar aixecant manualment tots el pods del clúster.
@@ -464,7 +473,10 @@ Per crear l'objecte Replication Controller en Kubernetes, utiltzem la següent c
 ```
 
 
+---
 
 #### Què és un Service?
+
+---
 
 #### Què és un Deployment?
