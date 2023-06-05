@@ -53,6 +53,20 @@ Els Master nodes actuen com el punt principal de contacte amb el clúster i són
 
 ![4-cwplanes](./arxius/imatges/4-cwplanes.PNG)
 
+#### Components dels nodes
+Tots dos tipus de nodes es caracteritzen per tenir una série de components que els permet complir el seu treball. Hi han components únics per tipus de node:
+
++ Components d’un Master Node
+  + etcd -> Servei que s’encarrega d’emmagatzemar informació del clúster accesible per tots els nodes
+  + kube-apiserver -> Server API que permet a l’usuari les càrregues de treball de Kubernetes entre altres funcions
+  + kube-controller-manager -> Servei que regula l’estat del clúster, gestiona els cicles de vida de les càrregues de treball i realitza tasques rutinàries
+  + kube-schedluer -> Servei que s’encarrega d’assignar càrregues de treball a nodes especifics
+
++ Components d’un Worker Node
+  + containers runtime -> Software per treballar amb containers, com per exemple Docker
+  + kubelet -> Servei que fa de punt de contacte del node amb el Control Plane
+  + kube-proxy-> Servei que s’encarrega d’enrutar peticions del containers a la xarxa interna del node
+
 ### Com es llança una aplicació en Kubernetes?
 
 Per llançar una aplicació en Kubernetes, primer has de containeritzar la teva aplicació i crear una imatge. Després de crear la imatge, has de donar-li a l'API de Kubernetes una descripció de la teva aplicació.
