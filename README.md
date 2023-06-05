@@ -81,7 +81,7 @@ Per instal·lar Minikube, es pot fer servir l'enllaç a la seva pàgina web: <ht
 
 Després d'instal·lar Minikube, el podem iniciar amb la següent comanda:
 
-> minikube start
+`minikube start`
 
 ```
 a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube start
@@ -100,4 +100,126 @@ a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube start
 🔎  Verifying Kubernetes components...
 🌟  Complementos habilitados: default-storageclass, storage-provisioner
 🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+```
+
+Un cop està Minikube en marxa, podem fer la següent comanda per veure el seu estat:
+
+`minikube status`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube status
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+```
+
+Per veure el llistat de nodes del clúster (*de moment només és un*) i de les seves IPs hem d'utilitzar la següent comanda:
+
+`minikube nodes list`
+
+Si només volem veure la IP del node, hem d'utilitzar la següent comanda:
+
+`minikube ip`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube node list
+minikube	192.168.49.2
+a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube ip
+192.168.49.2
+```
+
+Finalment, aturem Minikube amb la següent comanda:
+
+`minikube stop`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes$ minikube stop
+✋  Stopping node "minikube"  ...
+🛑  Apagando "minikube" mediante SSH...
+🛑  1 node stopped.
+```
+
+El que fa en realitat Minikube és muntar una màquina virtual que actuarà com únic node i on són tots els components d'un Master node, tot i que també actua com un Worker node.
+
+![6-mk_vm](./arxius/imatges/6-mk_vm.PNG)
+
+Però amb Minikube també podem crear un clúster amb dos nodes o més nodes amb la següent comanda:
+
+`minikube start --node 2`
+
+```
+a184311jq@PC~/kubernetes$ minikube start --nodes 2
+😄  minikube v1.30.1 en Ubuntu 23.04 (vbox/amd64)
+✨  Controlador docker seleccionado automáticamente
+📌  Using Docker driver with root privileges
+👍  Starting control plane node minikube in cluster minikube
+🚜  Pulling base image ...
+🔥  Creando docker container (CPUs=2, Memory=2200MB) ...
+🐳  Preparando Kubernetes v1.26.3 en Docker 23.0.2...
+    ▪ Generando certificados y llaves
+    ▪ Iniciando plano de control
+    ▪ Configurando reglas RBAC...
+🔗  Configurando CNI CNI ...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🔎  Verifying Kubernetes components...
+🌟  Complementos habilitados: storage-provisioner, default-storageclass
+
+👍  Starting worker node minikube-m02 in cluster minikube
+🚜  Pulling base image ...
+🔥  Creando docker container (CPUs=2, Memory=2200MB) ...
+
+🧯  Docker is nearly out of disk space, which may cause deployments to fail! (88% of capacity). You can pass '--force' to skip this check.
+💡  Suggestion: 
+
+    Try one or more of the following to free up space on the device:
+    
+    1. Run "docker system prune" to remove unused Docker data (optionally with "-a")
+    2. Increase the storage allocated to Docker for Desktop by clicking on:
+    Docker icon > Preferences > Resources > Disk Image Size
+    3. Run "minikube ssh -- docker system prune" if using the Docker container runtime
+🍿  Related issue: https://github.com/kubernetes/minikube/issues/9024
+
+🌐  Se han encontrado las siguientes opciones de red:
+    ▪ NO_PROXY=192.168.49.2
+🐳  Preparando Kubernetes v1.26.3 en Docker 23.0.2...
+    ▪ env NO_PROXY=192.168.49.2
+🔎  Verifying Kubernetes components...
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+```
+
+Si executem la comanda `minikube node list` per veure els nodes, ara podem veure que apareixen dues entrades. També executem la comanda `minikube status` per veure l'estat dels dos nodes. 
+
+```
+a184311jq@PC:~/kubernetes$ minikube node list
+minikube	192.168.49.2
+minikube-m02	192.168.49.3
+a184311jq@PC:~/kubernetes$ minikube status
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+minikube-m02
+type: Worker
+host: Running
+kubelet: Running
+
+
+```
+Aturem els nodes:
+
+```
+a184311jq@PC:~/kubernetes$ minikube stop
+✋  Stopping node "minikube"  ...
+🛑  Apagando "minikube" mediante SSH...
+✋  Stopping node "minikube-m02"  ...
+🛑  Apagando "minikube-m02" mediante SSH...
+🛑  2 nodes stopped.
+
 ```
