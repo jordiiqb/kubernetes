@@ -222,7 +222,6 @@ type: Worker
 host: Running
 kubelet: Running
 
-
 ```
 Aturem el clúster:
 
@@ -233,7 +232,6 @@ a184311jq@PC:~/kubernetes$ minikube stop
 ✋  Stopping node "minikube-m02"  ...
 🛑  Apagando "minikube-m02" mediante SSH...
 🛑  2 nodes stopped.
-
 ```
 
 ### Què és `kubectl` ?
@@ -254,7 +252,6 @@ Kubernetes control plane is running at https://192.168.49.2:8443
 CoreDNS is running at https://192.168.49.2:8443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
-
 ```
 
 Si volem llistar els nodes del clúster, hem d'executar la següent comanda:
@@ -265,7 +262,6 @@ Si volem llistar els nodes del clúster, hem d'executar la següent comanda:
 a184311jq@a184311jq-VirtualBox:~$ kubectl get nodes
 NAME   	STATUS   ROLES       	AGE	VERSION
 minikube   Ready	control-plane   168m   v1.26.3
-
 ```
 
 Totes les ordres per interactuar amb l'API de Kubernetes es poden fer per CLI, però per crear objectes de l'API es pot fer també mitjançant arxius de configuració.
@@ -314,7 +310,7 @@ Les característiques d'un pod són que sempre tenen un o més containers, mai p
 
 Normalment els pods no es creen de forma manual, però per posar un exemple, crearé un pod que corri la següent [app](./arxius/app/app-base/app.js).
 
-Primer de tot, hem de crear l'arxiu del pod.
+Primer de tot, hem de crear l'arxiu YAML del pod.
 
 > [app-manual.yaml](./arxius/pods/app-manual.yaml)
 
@@ -338,14 +334,13 @@ A l'apartat `metadata` especifiquem quin serà el nom que tindrà el nostre obje
 
 I per últim, en el subapartat `containers: ` dins l'apartat `spec: ` especifiquem d'on treu la imatge del container, quin nom tindrà el container i per quin port escoltarà.
 
-Per crear l'objecte en Kubernetes, utiltzem la següent comanda:
+Per crear l'objecte pod en Kubernetes, utiltzem la següent comanda:
 
 `kubectl create -f app-manual.yaml`
 
 ```
 a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl create -f app-manual.yaml 
 pod/app-manual created
-
 ```
 
 Alternativament, també podem utilitzar aquesta comanda per crear l'objecte si no està creat o per modificar-ho si ho està.
@@ -354,7 +349,6 @@ Alternativament, també podem utilitzar aquesta comanda per crear l'objecte si n
 ```
 a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl apply -f app-manual.yaml 
 pod/app-manual created
-
 ```
 
 Per poder llistar els pods, utiltzem la següent comanda:
@@ -365,7 +359,6 @@ Per poder llistar els pods, utiltzem la següent comanda:
 a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl get pods
 NAME         READY   STATUS    RESTARTS   AGE
 app-manual   1/1     Running   0          84s
-
 ```
 
 Per llistar-los amb més informació, utiltzem la següent comanda:
@@ -376,7 +369,6 @@ Per llistar-los amb més informació, utiltzem la següent comanda:
 a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl get pods -o wide
 NAME         READY   STATUS    RESTARTS   AGE    IP           NODE       NOMINATED NODE   READINESS GATES
 app-manual   1/1     Running   0          106s   10.244.0.8   minikube   <none>           <none>
-
 ```
 
 Amb l'última ordre podem veure la IP asignada del pod. Si ataquem a la IP (10.244.0.8) en el port 8080, ens hauria de retornar el nom de host del pod, però si ho executem veiem que no es així:
@@ -399,12 +391,11 @@ Forwarding from 127.0.0.1:8888 -> 8080
 Forwarding from [::1]:8888 -> 8080
 Handling connection for 8888
 
-```
-```
 
+```
+```
 a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ curl -s localhost:8888
 You've hit app-manual
-
 ```
 
 La comanda `kubectl port-forward` enruta el tràfic del port 8080 del pod a un port de la nostra màquina, en aquest cas el 8888.
@@ -416,10 +407,63 @@ Per eliminar un pod, utilitzem la següent comanda:
 ```
 a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl delete pod app-manual
 pod "app-manual" deleted
-
 ```
 
 #### Què són un Replication Controller i un Replica Set?
+
+Els pods són objectes que es van pensar per ser efímers. A vegades un pod pot fallar degut a un bug o un problema propi del node i no és viable haber d'estar aixecant manualment tots el pods del clúster.
+
+Per això es van idear els Replication Controllers. Aquests són uns objectes de l'API que donats una definició s'encarreguen de mantenir un número de pods corrent en tot moment.
+Si un pod deixa de funcionar, el Replica Controller s'encarregarà d'aixecar un de nou.
+
+![8-rcs](./arxius/imatges/8-rcs.PNG)
+
+Veiem un exemple d'arxiu YAML del Replication Controller.
+
+> [app-rc.yaml](./arxius/replication_controllers/app-rc.yaml)
+
+```
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: app-rc
+spec:
+  replicas: 3
+  selector:
+    app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name : app
+        image: jordiiqb/app
+        ports:
+        - containerPort: 8080
+```
+
+En aquest arxiu veiem tres subapartats nous de l'apartat `spec:` :
+
++ `replicas: `
++ `selector: `
++ `template: `
+
+En el subapartat `replicas: ` especifiquem quantes còpies del pod volem.
+En el subapartat `selector: ` especifiquem quin es l'etiqueta per la cual revisarà els pods concrets.
+En el subapartat `template: ` especifiquem com serà la "plantilla" dels nostres pods.
+
+Aquest és el loop que faría el meu Replication Controller "app-rc" per verificar si hi han 3 pods "app":
+
+![9-rc_selector](./arxius/imatges/9-rc_selector.PNG)
+
+Per crear l'objecte Replication Controller en Kubernetes, utiltzem la següent comanda:
+
+``
+```
+```
+
+
 
 #### Què és un Service?
 
