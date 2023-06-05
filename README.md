@@ -11,7 +11,8 @@ Kubernetes és un sistema de software de codi obert que serveix per a automatitz
   
 Kubernetes permet executar aplicacions de software en milers de nodes d'ordinadors  
 com si tots aquests nodes fossin un únic i enorme ordinador, fent que s'abstregui la infraestructura subjacent i fent que se simplifiqui el desenvolupament, el desplegament i la gestió.
-### Origen de Kubernetes  
+
+### Quin és l'origen de Kubernetes?  
   
 Kubernetes va ser desenvolupat originalment per Google. Google sempre ha executat  
 aplicacions en contenidors. Ja en 2014, van dir que llançaven 2.000 milions de contenidors cada setmana. Això és més de 3.000 contenidors per segon, i la xifra és molt  
@@ -53,7 +54,8 @@ Els Master nodes actuen com el punt principal de contacte amb el clúster i són
 
 ![4-cwplanes](./arxius/imatges/4-cwplanes.PNG)
 
-#### Components dels nodes
+#### Quins són els components dels nodes?
+
 Tots dos tipus de nodes es caracteritzen per tenir una série de components que els permet complir el seu treball. Hi han components únics per tipus de node:
 
 + Components d’un Master Node
@@ -77,13 +79,17 @@ Quan l'API processa la descripció de l'aplicació, Kubernetes crea objectes a p
 
 ![5-kubernetes_work](./arxius/imatges/5-kubernetes_work.PNG)
 
+---
+
+## Interactuar amb Kubernetes
+
 ### Què és Minikube?
 
 Minikube és una distribució reduïda de Kubernetes que et permet muntar un clúster amb només un node.
 
 Per fer aquest projecte, he utilitzat Minikube, ja que és l'eina més fàcil per aprendre a interactuar amb l'API sense haver de disposar de moltes màquines físiques o virtuals configurades.
 
-Per instal·lar Minikube, es pot fer servir l'enllaç a la seva pàgina web: <https://k8s-docs.netlify.app/en/docs/tasks/tools/install-minikube/>
+Per instal·lar Minikube, es pot fer servir l'enllaç a la següent pàgina web: <https://k8s-docs.netlify.app/en/docs/tasks/tools/install-minikube/>
 
 Després d'instal·lar Minikube, el podem iniciar amb la següent comanda:
 
@@ -229,3 +235,50 @@ a184311jq@PC:~/kubernetes$ minikube stop
 🛑  2 nodes stopped.
 
 ```
+
+### Què és `kubectl` ?
+
+'kubectl' és l'eina de CLI que ofereix Kubernetes perquè els usuaris interactuïn amb el Control Plane mitjançant l'API de Kubernetes.
+
+Per instal·lar 'kubectl', es pot fer servir l'enllaç a la següent pàgina web: <https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/>
+
+Un cop instal·lat i amb el clúster de Minikube encès, podem començar a interactuar amb l'API.
+
+Si volem obtenir informació del clúster, hem d'executar la següent comanda:
+
+`kubectl cluster-info`
+
+```
+a184311jq@a184311jq-VirtualBox:~$ kubectl cluster-info
+Kubernetes control plane is running at https://192.168.49.2:8443
+CoreDNS is running at https://192.168.49.2:8443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+```
+
+Si volem llistar els nodes del clúster, hem d'executar la següent comanda:
+
+`kubectl get nodes`
+
+```
+a184311jq@a184311jq-VirtualBox:~$ kubectl get nodes
+NAME   	STATUS   ROLES       	AGE	VERSION
+minikube   Ready	control-plane   168m   v1.26.3
+
+```
+
+Totes les ordres per interactuar amb l'API de Kubernetes es poden fer per CLI, però per crear objectes de l'API es pot fer també mitjançant arxius de configuració.
+
+Per aquest treball, tots els exemples s'han fet mitjançant arxius YAML.
+
+#### Quines són les característiques d’un arxiu YAML d’objecte API Kubernetes?
+
+L’API de Kubernetes disposa de diversos objectes que veurem a continuació, i els arxius YAML per cada objecte tenen petites diferencien entre ells, però tots tenen certes parts en comú:
+
+apiVersion:   -> Camp on es diu la versió de l'API de Kubernetes utilitzada per l’objecte
+kind: -> Camp on es diu el tipus d’objecte de l'API de Kubernetes
+metadata: -> Camp on s’especifica el nom de l’objecte, etiquetes, anotacions, etc.
+spec: -> Camp on es diu la imatge del container, els ports, etc.
+
+Més endavant veurem els diferents arxius per cada objecte.
