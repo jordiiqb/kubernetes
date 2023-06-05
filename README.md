@@ -468,10 +468,155 @@ Aquest és el loop que faría el meu Replication Controller "app-rc" per verific
 
 Per crear l'objecte Replication Controller en Kubernetes, utiltzem la següent comanda:
 
-``
+`kubectl create -f app-rc.yaml`
 ```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/replication_controllers$ kubectl create -f app-rc.yaml 
+replicationcontroller/app-rc created
 ```
 
+Un cop creat el Replication Controller, podem verificar el seu estat amb la següent ordre:
+
+`kubectl get rc`
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/replication_controllers$ kubectl get rc
+NAME     DESIRED   CURRENT   READY   AGE
+app-rc   3         3         3       3m40s
+```
+
+Si llistem els pods del clúster, veiem que s'han creat tres objectes de tipus pod:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/replication_controllers$ kubectl get pods
+NAME           READY   STATUS    RESTARTS   AGE
+app-rc-8dzcp   1/1     Running   0          71s
+app-rc-lvbjc   1/1     Running   0          71s
+app-rc-tx8tp   1/1     Running   0          71s
+```
+
+Si eliminem un pod qualsevol, podem veure com el Replication controller s'encarrega de generar un de nou.
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/replication_controllers$ kubectl get pods
+NAME           READY   STATUS    RESTARTS   AGE
+app-rc-8dzcp   1/1     Running   0          6m20s
+app-rc-lvbjc   1/1     Running   0          6m20s
+app-rc-tx8tp   1/1     Running   0          6m20s
+
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/replication_controllers$ kubectl delete pod app-rc-8dzcp
+pod "app-rc-8dzcp" deleted
+
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/replication_controllers$ kubectl get pods
+NAME           READY   STATUS        RESTARTS   AGE
+app-rc-8dzcp   1/1     Terminating   0          6m50s
+app-rc-lvbjc   1/1     Running       0          6m50s
+app-rc-tx8tp   1/1     Running       0          6m50s
+app-rc-vgq9h   1/1     Running       0          17s
+```
+
+En el cas que vulguem crear més rèpliques o volguem modificar algún paràmetre de l'objecte ja creat, utilitzarem la següent comanda:
+
+`kubectl edit rc app-rc`
+
+Aquesta comanda ens obra un editor de text que ens deixa modificar les propietats de l'objecte Replication Controller ja creat.
+
+```
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  creationTimestamp: "2023-06-05T22:11:34Z"
+  generation: 1
+  labels:
+    app: app
+  name: app-rc
+  namespace: default
+  resourceVersion: "11930"
+  uid: d0ef54cc-a4ed-4588-91d2-a405d3a2c175
+spec:
+  replicas: 3
+  selector:
+    app: app
+  template:
+    metadata:
+      creationTimestamp: null
+	  labels:
+        app: app
+    spec:
+      containers:
+      - image: jordiiqb/app
+        imagePullPolicy: Always
+        name: app
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+	  restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 3
+  fullyLabeledReplicas: 3
+  observedGeneration: 1
+  readyReplicas: 3
+  replicas: 3
+```
+
+Al canviar el número de rèpliques de _3_ a _5_ en l'apartat `spec:  replicas: 3`, podem veure que s'han creat dos pods més:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/replication_controllers$ kubectl get pods
+NAME           READY   STATUS    RESTARTS   AGE
+app-rc-j6dlf   1/1     Running   0          2m46s
+app-rc-lvbjc   1/1     Running   0          22m
+app-rc-tnwh8   1/1     Running   0          2m46s
+app-rc-tx8tp   1/1     Running   0          22m
+app-rc-vgq9h   1/1     Running   0          16m
+```
+
+Alternativament, es podria fer amb la següent comanda:
+
+`kubectl scale rc app-rc --replicas 6`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/replication_controllers$ kubectl scale rc app-rc --replicas 6
+replicationcontroller/app-rc scaled
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/replication_controllers$ kubectl get pods
+
+NAME           READY   STATUS    RESTARTS   AGE
+app-rc-j6dlf   1/1     Running   0          3m31s
+app-rc-lvbjc   1/1     Running   0          23m
+app-rc-tnwh8   1/1     Running   0          3m31s
+app-rc-tx8tp   1/1     Running   0          23m
+app-rc-vgq9h   1/1     Running   0          16m
+app-rc-z98z5   1/1     Running   0          9s
+
+```
+
+Si eliminem el Replication Controller, podem veure que automàticament s'eliminen tots el pods que s'havien creat:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/replication_controllers$ kubectl delete rc app-rc
+replicationcontroller "app-rc" deleted
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/replication_controllers$ kubectl get pods
+NAME           READY   STATUS        RESTARTS   AGE
+app-rc-j6dlf   1/1     Terminating   0          6m54s
+app-rc-lvbjc   1/1     Terminating   0          26m
+app-rc-tnwh8   1/1     Terminating   0          6m54s
+app-rc-tx8tp   1/1     Terminating   0          26m
+app-rc-vgq9h   1/1     Terminating   0          20m
+app-rc-z98z5   1/1     Terminating   0          3m32s
+
+```
+
+En conclusió. Tot i que els Replication Controllers són molt útils, aquests estan limitats a l'hora de definir el camp `selector: ` ja que aquest només permet vigilar els pods que tenen una etiqueta igual al selector.
+Els Replication Sets són una evolució dels Replication Controllers, ja que permeten definir més opcions al camp `selector: ` a part d'etiquetes. 
 
 ---
 
