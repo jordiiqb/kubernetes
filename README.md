@@ -1,5 +1,5 @@
 # Projecte final de grau superior d'ASIX
-![kubernetes_logo](./arxius/imatges/1-kubernetes_logo.png)
+![1-kubernetes_logo](./arxius/imatges/1-kubernetes_logo.png)
 
 ---
 ---
@@ -305,6 +305,119 @@ www.listen(8080);
 ```
 
 #### Què és un Pod?
+
+El pod és la unitat més petita amb la que treballa Kubernetes. Kubernetes no treballa amb els containers de forma directa, sinó que treballa sobre els pods que és on s'estan executant els containers.
+
+Les característiques d'un pod són que sempre tenen un o més containers, mai poden estar compartits entre nodes i cada un es comporta com una màquina separada amb la seva pròpia IP, hostname, processos, etc. executant una única aplicació.
+
+![7-pods](./arxius/imatges/7-pods.PNG)
+
+Normalment els pods no es creen de forma manual, però per posar un exemple, crearé un pod que corri la següent [app](./arxius/app/app-base/app.js).
+
+Primer de tot, hem de crear l'arxiu del pod.
+
+> [app-manual.yaml](./arxius/pods/app-manual.yaml)
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-manual
+spec:
+  containers:
+  - image: jordiiqb/app
+    name: app
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+```
+
+En aquest cas, en l'apartat `kind: ` hem d'especificar que volem crear un objecte de tipus `Pod`.
+
+A l'apartat `metadata` especifiquem quin serà el nom que tindrà el nostre objecte en el clúster. En aquest cas es dirà `app-manual`.
+
+I per últim, en el subapartat `containers: ` dins l'apartat `spec: ` especifiquem d'on treu la imatge del container, quin nom tindrà el container i per quin port escoltarà.
+
+Per crear l'objecte en Kubernetes, utiltzem la següent comanda:
+
+`kubectl create -f app-manual.yaml`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl create -f app-manual.yaml 
+pod/app-manual created
+
+```
+
+Alternativament, també podem utilitzar aquesta comanda per crear l'objecte si no està creat o per modificar-ho si ho està.
+
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl apply -f app-manual.yaml 
+pod/app-manual created
+
+```
+
+Per poder llistar els pods, utiltzem la següent comanda:
+
+`kubectl get pods`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl get pods
+NAME         READY   STATUS    RESTARTS   AGE
+app-manual   1/1     Running   0          84s
+
+```
+
+Per llistar-los amb més informació, utiltzem la següent comanda:
+
+`kubectl get pods -o wide`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl get pods -o wide
+NAME         READY   STATUS    RESTARTS   AGE    IP           NODE       NOMINATED NODE   READINESS GATES
+app-manual   1/1     Running   0          106s   10.244.0.8   minikube   <none>           <none>
+
+```
+
+Amb l'última ordre podem veure la IP asignada del pod. Si ataquem a la IP (10.244.0.8) en el port 8080, ens hauria de retornar el nom de host del pod, però si ho executem veiem que no es així:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ curl -s 10.244.0.8:8080
+
+
+
+
+```
+
+Els pods només son visibles dins del propi clúster de Kubernetes. Per poder accedir al recurs dins d'un pod, en aquest cas o podem fer de la següent forma:
+
+`kubectl port-forward app-manual 8888:8080`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl port-forward app-manual 8888:8080
+Forwarding from 127.0.0.1:8888 -> 8080
+Forwarding from [::1]:8888 -> 8080
+Handling connection for 8888
+
+```
+```
+
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ curl -s localhost:8888
+You've hit app-manual
+
+```
+
+La comanda `kubectl port-forward` enruta el tràfic del port 8080 del pod a un port de la nostra màquina, en aquest cas el 8888.
+
+Per eliminar un pod, utilitzem la següent comanda:
+
+`kubectl delete pod app-manual`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/pods$ kubectl delete pod app-manual
+pod "app-manual" deleted
+
+```
 
 #### Què són un Replication Controller i un Replica Set?
 
