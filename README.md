@@ -425,7 +425,7 @@ Els pods són objectes que es van pensar per ser efímers. A vegades un pod pot 
 Per això es van idear els Replication Controllers. Aquests són uns objectes de l'API que donats una definició s'encarreguen de mantenir un número de pods corrent en tot moment.
 Si un pod deixa de funcionar, el Replica Controller s'encarregarà d'aixecar un de nou.
 
-![8-rcs](./arxius/imatges/8-rcs.PNG)
+![8-rcs](./arxius/imatges/8-rcs.png)
 
 Veiem un exemple d'arxiu YAML del Replication Controller.
 
@@ -464,7 +464,7 @@ En el subapartat `template: ` especifiquem com serà la "plantilla" dels nostres
 
 Aquest és el loop que faría el meu Replication Controller "app-rc" per verificar si hi han 3 pods "app":
 
-![9-rc_selector](./arxius/imatges/9-rc_selector.PNG)
+![9-rc_selector](./arxius/imatges/9-rc_selector.png)
 
 Per crear l'objecte Replication Controller en Kubernetes, utiltzem la següent comanda:
 
