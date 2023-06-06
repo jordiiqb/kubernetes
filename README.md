@@ -82,15 +82,15 @@ Quan l'API processa la descripció de l'aplicació, Kubernetes crea objectes a p
 
 ## Interactuar amb Kubernetes
 
-### Què és Minikube?
+### Què és `Minikube`?
 
-Minikube és una distribució reduïda de Kubernetes que permet muntar un clúster amb només un node.
+`Minikube` és una distribució reduïda de Kubernetes que permet muntar un clúster amb només un node.
 
-Per fer aquest projecte he utilitzat Minikube, ja que és l'eina més fàcil per aprendre a interactuar amb l'API sense haver de disposar de moltes màquines físiques o virtuals configurades.
+Per fer aquest projecte he utilitzat `Minikube`, ja que és l'eina més fàcil per aprendre a interactuar amb l'API sense haver de disposar de moltes màquines físiques o virtuals configurades.
 
-Per instal·lar Minikube, es pot fer servir l'enllaç a la següent pàgina web: <https://k8s-docs.netlify.app/en/docs/tasks/tools/install-minikube/>
+Per instal·lar `Minikube`, es pot fer servir l'enllaç a la següent pàgina web: <https://k8s-docs.netlify.app/en/docs/tasks/tools/install-minikube/>
 
-Després d'instal·lar Minikube, el podem iniciar amb la següent comanda:
+Després d'instal·lar `Minikube`, el podem iniciar amb la següent comanda:
 
 `minikube start`
 
@@ -113,7 +113,7 @@ a184311jq@PC:~/kubernetes$ minikube start
 🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 ```
 
-Un cop està Minikube en marxa, podem fer la següent comanda per veure el seu estat:
+Un cop està `Minikube` en marxa, podem fer la següent comanda per veure el seu estat:
 
 `minikube status`
 
@@ -154,11 +154,11 @@ a184311jq@PC:~/kubernetes$ minikube stop
 🛑  1 node stopped.
 ```
 
-El que fa en realitat Minikube és muntar una màquina virtual que actuarà com únic node i on són tots els components d'un Master node, tot i que també actua com un Worker node.
+El que fa en realitat `Minikube` és muntar una màquina virtual que actuarà com únic node i on són tots els components d'un Master node, tot i que també actua com un Worker node.
 
 ![6-mk_vm](./arxius/imatges/6-mk_vm.PNG)
 
-Però amb Minikube també podem crear un clúster amb dos nodes o més amb la següent comanda:
+Però amb `Minikube` també podem crear un clúster amb dos nodes o més amb la següent comanda:
 
 `minikube start --node 2`
 
@@ -240,9 +240,9 @@ Per poder treballar amb `minikube`, s'ha de tenir instal·lat un *software* de c
 
 ### Què és `kubectl` ?
 
-'kubectl' és l'eina de CLI que ofereix Kubernetes perquè els usuaris interactuïn amb el Control Plane mitjançant l'API de Kubernetes.
+`kubectl` és l'eina de CLI que ofereix Kubernetes perquè els usuaris interactuïn amb el Control Plane mitjançant l'API de Kubernetes.
 
-Per instal·lar 'kubectl', es pot fer servir l'enllaç a la següent pàgina web: <https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/>
+Per instal·lar `kubectl`, es pot fer servir l'enllaç a la següent pàgina web: <https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/>
 
 Un cop instal·lat i amb el clúster de Minikube encès, podem començar a interactuar amb l'API.
 
@@ -674,7 +674,7 @@ Per crear l'objecte *service* en Kubernetes, utiltzem la següent comanda:
 a184311jq@PC:~/kubernetes/arxius/services$ kubectl create -f app-svc.yaml 
 service/app-svc created
 ```
-Si llistem tots el *services* mitjançant la comanda `kubectl get services`, podem veure el nostre objecte *service* a més d'un objecte que crea Minikube per defecte:
+Si llistem tots el *services* mitjançant la comanda `kubectl get services`, podem veure el nostre objecte *service* a més d'un objecte que crea `Minikube` per defecte:
 
 ```
 a184311jq@PC:~/kubernetes/arxius/services$ kubectl get services
@@ -965,8 +965,8 @@ a184311jq@PC:~/kubernetes/arxius/pods$ kubectl create -f app-manual.yaml
 Error from server (AlreadyExists): error when creating "app-manual.yaml": pods "app-manual" already exists
 ```
 
-Per defecte al arrencar el clúster de minikube, es crea el *namespace* `default` i aquí és on es creen quasi tots els objectes de l'API.
-Minikube també crea tres *namespaces* propis per executar tots els processos interns.
+Per defecte al arrencar el clúster de `minikube`, es crea el *namespace* `default` i aquí és on es creen quasi tots els objectes de l'API.
+`Minikube` també crea tres *namespaces* propis per executar tots els processos interns.
 
 Podem veure els *namespaces* executant la següent ordre:
 
