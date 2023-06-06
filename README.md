@@ -764,3 +764,186 @@ You've hit app-rc-t7p4c
 ---
 
 #### Què és un Deployment?
+
+Els Deployments són uns objectes de l'API de Kubernetes dissenyats per fer més senzill el cicle de manteniment dels Pods replicats.
+Posem com a exemple aquest clúster:
+
+![12-ex_cluster](./arxius/imatges/12-ex_cluster.PNG)
+
+En el cas de voler actualitzar la imatge de la nostra aplicació de la versió inicial (v1) a una nova versió (v2) que s'utilitza com a plantilla en els Pods en funcionament, hauríem de modificar-ho en el Replication Controller. Un cop aquest detecti el canvi, el que farà serà aturar tots els Pods antics i els renovarà amb la nova versió.
+El problema de fer això és que si l'aplicació que actualitzem ha d'estar sempre en funcionament, hi haurà un petit període de temps en que no estarà disponible.
+També pot passar que hi hagi algun problema amb la nova versió i s'hagi de tornar a la versió anterior, fent encara més farragós tot el procés.
+
+![13-upd1](./arxius/imatges/13-upd1.PNG)
+
+Els Deployments ens ajuden en aquest cas, ja que el que fan és crear i supervisar un Replication Set i uns Pods amb la nova versió de l'aplicació i progressivament va canviant els Pods nous pels vells sense que l'aplicació deixi estar mai en funcionament.
+
+![14-dep](./arxius/imatges/14-dep.png)
+
+![15-upd2](./arxius/imatges/15-upd2.PNG)
+
+Un cop ha acabat el procés d'actualització, en el nostre clúster hem passat de l'estat de la imatge de l'esquerra per l'estat de la imatge a la dreta.
+
+![16-estats_inicial_final](./arxius/imatges/16-estats_inicial_final.PNG)
+
+Veiem un exemple d'arxiu YAML d'un objecte Replication Controller.
+
+> [app-deployment.yaml](./arxius/deployments/app-deployment.yaml)
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name : app
+        image: jordiiqb/app
+        ports:
+        - containerPort: 8080
+```
+
+A simple vista, l'arxiu YAML és molt semblant a un arxiu YAML d'un Replication Controller, però en aquest cas, el camp selector està configurat amb un subcamp diferent, ja que els Deployments treballen amb Replica Sets i no amb Replication Controllers.
+
+Per crear l'objecte Deployment en Kubernetes, utiltzem la següent comanda:
+
+`kubectl create -f app-deployment.yaml`
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ kubectl create -f app-deployment.yaml 
+deployment.apps/app-deployment created
+```
+
+Per veure l'estat del Deployment podem fer servir la següent comanda:
+
+`kubectl get deployment`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ kubectl get deployment
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+app-deployment   3/3     3            3           25s
+```
+
+Però si volem saber com ha anat el llançament del deployment, podem executar la següent comanda:
+
+`kubectl rollout status deployment app-deployment`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ kubectl rollout status deployment app-deployment
+deployment "app-deployment" successfully rolled out
+```
+
+Un cop sabem que el Deployment s'ha creat correctament, podem revisar els Replication Sets i els Pods:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ kubectl get rs
+NAME                        DESIRED   CURRENT   READY   AGE
+app-deployment-547bcb94f8   3         3         3       34s
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+app-deployment-547bcb94f8-8bgrm   1/1     Running   0          39s
+app-deployment-547bcb94f8-dn8mt   1/1     Running   0          39s
+app-deployment-547bcb94f8-z46mv   1/1     Running   0          39s
+```
+
+Com encara tenim l'objecte Service creat i les etiquetes dels Pods són les mateixes, podem intearctuar amb els Pods:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ curl -s 192.168.49.2:30123
+You've hit app-deployment-547bcb94f8-z46mv
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ curl -s 192.168.49.2:30123
+You've hit app-deployment-547bcb94f8-8bgrm
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ curl -s 192.168.49.2:30123
+You've hit app-deployment-547bcb94f8-dn8mt
+```
+
+#### Prova d'actualització d'un Deployment
+
+Per veure les característiques abans mencionades sobre els objectes Deployment, he creat una imatge nova de l'app en Javascript:
+
+> [app-v2.js](./arxius/app/app-v2/app-v2.js)
+
+```
+const http = require('http');
+const os = require('os');
+console.log("App server starting...");
+var handler = function(request, response) {
+console.log("Received request from " + request.connection.remoteAddress);
+response.writeHead(200);
+response.end("This is app v2 running. You've hit " + os.hostname() + "\n");
+};
+var www = http.createServer(handler);
+www.listen(8080);
+```
+
+Bàsicament, aquesta nova versió retorna un string una mica diferent que de la versió inicial.
+
+Per veure com es comporten els Pods mentres es fa l'update, executem la següent comanda per fer un bucle en un altre terminal:
+
+`while true; do curl -s 192.168.49.2:30123; sleep 2; done`
+
+Mentres deixem el bucle fent, revisem els Pods i executem l'update amb la següent comanda:
+
+`kubectl set-image deployment app-deployment nodejs=jordiiqb/app:v2`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+app-deployment-6bbb7cffdf-9wp9s   1/1     Running   0          42s
+app-deployment-6bbb7cffdf-btkcz   1/1     Running   0          45s
+app-deployment-6bbb7cffdf-vlb94   1/1     Running   0          40s
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ kubectl set image deployment app-deployment app=jordiiqb/app:v2
+deployment.apps/app-deployment image updated
+```
+
+Un cop executem l'update, si tornem a revisar els Pods, veiem el següent:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ kubectl get pods
+NAME                              READY   STATUS              RESTARTS   AGE
+app-deployment-56c9ff8d84-2slpw   1/1     Running             0          9s
+app-deployment-56c9ff8d84-jdsbr   0/1     ContainerCreating   0          3s
+app-deployment-56c9ff8d84-nf7r9   1/1     Running             0          6s
+app-deployment-6bbb7cffdf-9wp9s   1/1     Running             0          78s
+app-deployment-6bbb7cffdf-btkcz   1/1     Terminating         0          81s
+app-deployment-6bbb7cffdf-vlb94   1/1     Terminating         0          76s
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/deployments$ kubectl get pods
+NAME                              READY   STATUS        RESTARTS   AGE
+app-deployment-56c9ff8d84-2slpw   1/1     Running       0          19s
+app-deployment-56c9ff8d84-jdsbr   1/1     Running       0          13s
+app-deployment-56c9ff8d84-nf7r9   1/1     Running       0          16s
+app-deployment-6bbb7cffdf-9wp9s   1/1     Terminating   0          88s
+app-deployment-6bbb7cffdf-btkcz   1/1     Terminating   0          91s
+app-deployment-6bbb7cffdf-vlb94   1/1     Terminating   0          86s
+```
+
+Veiem que en un moment ha creat els nous Pods i ha eliminat els vells.
+
+Si revisem el resultat del bucle, podem veure com ho ha fet progresivament:
+
+```
+You've hit app-deployment-6bbb7cffdf-9wp9s
+You've hit app-deployment-6bbb7cffdf-btkcz
+You've hit app-deployment-6bbb7cffdf-vlb94
+You've hit app-deployment-6bbb7cffdf-9wp9s
+You've hit app-deployment-6bbb7cffdf-vlb94
+You've hit app-deployment-6bbb7cffdf-9wp9s
+This is app v2 running. You've hit app-deployment-56c9ff8d84-2slpw
+This is app v2 running. You've hit app-deployment-56c9ff8d84-nf7r9
+This is app v2 running. You've hit app-deployment-56c9ff8d84-2slpw
+This is app v2 running. You've hit app-deployment-56c9ff8d84-jdsbr
+This is app v2 running. You've hit app-deployment-56c9ff8d84-jdsbr
+This is app v2 running. You've hit app-deployment-56c9ff8d84-2slpw
+
+```
+
+Per fer els updates, també podem modificar l'arxiu YAML i després executar la comanda `kubectl apply -f app-deployment.yaml` o també podem executar `kubectl edit deployment app-deployment` i editar les propietats de l'objecte creat.
+
