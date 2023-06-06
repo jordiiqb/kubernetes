@@ -317,7 +317,7 @@ Les característiques d'un pod són que sempre tenen un o més containers, mai p
 
 Normalment els pods no es creen de forma manual, però per posar un exemple, crearé un pod que corri la següent [app](./arxius/app/app-base/app.js).
 
-Primer de tot, hem de crear l'arxiu YAML del pod.
+Primer de tot, hem de crear l'arxiu YAML de l'objecte pod.
 
 > [app-manual.yaml](./arxius/pods/app-manual.yaml)
 
@@ -427,7 +427,7 @@ Si un pod deixa de funcionar, el Replica Controller s'encarregarà d'aixecar un 
 
 ![8-rcs](./arxius/imatges/8-rcs.png)
 
-Veiem un exemple d'arxiu YAML del Replication Controller.
+Veiem un exemple d'arxiu YAML d'un objecte Replication Controller.
 
 > [app-rc.yaml](./arxius/replication_controllers/app-rc.yaml)
 
@@ -622,29 +622,145 @@ Els Replication Sets són una evolució dels Replication Controllers, ja que per
 
 #### Què és un Service?
 
-Com hem vist anteriorment, els Pods només són accesibles desde dins del clúster i també hem vist que hi ha vegades que hi ha moltes rèpliques d'un mateix pod fetn correr la mateixa aplicació.
+Com hem vist anteriorment, hi han diversos problemes a l'hora de treballar amb els Pods. Hem vist que no podem accedir a un Pod des de fora del clúster, però ara també hem vist que no només hi ha un Pod, si no que hi pot haver-hi molts, aquests poden fallar i es poden crear de nous.
+Això fa que no sigui viable atacar directament a un Pod per treballar contra una aplicació, per això es van crear els Services.
 
 L'objecte Service és un objecte de l'API de Kubernetes que crea un únic i constant punt d'entrada per a tots els mateixos pods d'un tipus, únificant l'accés a tots els pods en un sol objecte.
+
+Amb un Objecte Service, ens és indiferent a quin pod ataquem, ja que el propi objecte seleccionarà un pod qualsevol de tots el que té enrutats.
 
 Existeixen diferents tipus d'objectes Service, però en aquest projecte veurem dos:
 
 + ClusterIP
 + NodePort
 
-El objecte Service de tipus Cluster IP és l'objecte Service que es crea per defecte en Kubernetes i és el que només enruta cap a dins del propi clúster.
+L'objecte Service de tipus Cluster IP és l'objecte Service que es crea per defecte en Kubernetes i és el que només enruta cap a dins del propi clúster.
 
-En canvi, l'objecte Service de tipus NodePort permet poder atacar als pods desde fora del clúster, ja que el que fa és obrir un port estàtic en cada node del clúster i enruta el tràfic als pods.
-
-Per exemple, en la següent imatge, l'objecte "Backend Service" és del tipus "ClusterIP" mentres que l'objecte "Frontend Service" és de tipus NodePort.
+Per exemple, en la següent imatge, l'objecte "Frontend Service" és de tipus NodePort.
 
 ![10-services](./arxius/imatges/10-services.png)
 
-En la següent imatge podem veure clarament com funciona un objecte Service de tipus NodePort:
+En canvi, l'objecte Service de tipus NodePort permet poder atacar als pods desde fora del clúster, ja que el que fa és obrir un port estàtic en cada node del clúster i enruta el tràfic als pods.
+
+Per exemple, en la següent imatge podem veure clarament com funciona un objecte Service de tipus NodePort:
 
 ![11-svc_nd](./arxius/imatges/11-svc_nd.PNG)
 
+Veiem un exemple d'arxiu YAML d'un objecte Service.
 
+> [app-svc.yaml](./arxius/services/app-svc.yaml)
 
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-svc
+spec:
+  selector:
+    app: app
+  ports:
+  - port: 80
+    targetPort: 8080
+```
+
+D'igual forma que els Replication Controllers o els Replication Sets, els Services utilitzen un selector amb una etiqueta per controlar els pods que han d'enrutar.
+
+Per crear l'objecte Service en Kubernetes, utiltzem la següent comanda:
+
+`kubectl create -f app-svc.yaml`
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ kubectl create -f app-svc.yaml 
+service/app-svc created
+```
+Si llistem tots el Services mitjançant la comanda `kubectl get services`, podem veure el nostre objecte Service a més d'un objecte que crea Minikube per defecte:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ kubectl get services
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+app-svc      ClusterIP   10.107.252.192   <none>        80/TCP    15s
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP   13h
+```
+
+Com en l'arxiu YAML no hem especificat quin tipus de Service ha de ser l'objecte, per defecte el crearà com a tipus ClusterIP.
+
+Si utilitzem l'opció `-o wide` podem veure que també indica informació del selector:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ kubectl get services -o wide
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE     SELECTOR
+app-svc      ClusterIP   10.107.252.192   <none>        80/TCP    2m58s   app=app
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP   13h     <none>
+```
+
+Eliminem l'objecte Service:
+
+`kubectl delete service app-svc`
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ kubectl delete service app-svc
+service "app-svc" deleted
+```
+
+El nostre objectiu final és poder atacar als pods des de fora del clúster, per això necesitem crear un Service de tipus NodePort.
+
+Aquest és un exemple d'arxiu YAML d'un objecte Service de tipus NodePort.
+
+> [app-svc-nd.yaml](./arxius/services/app-svc-nd.yaml)
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-svc-nodeport
+spec:
+  type: NodePort
+  selector:
+    app: app
+  ports:
+  - port: 80
+    targetPort: 8080
+    nodePort: 30123
+```
+
+En l'arxiu podem veure que hi ha dos camps nous en comparació amb el primer arxiu Service. Podem veure que apareix el camp `type: NodePort` per especificar el tipus de Service i a `ports: ` apareix un camp amb el port estàtic que obrirà als nodes `nodePort: 30123`.
+
+Creem l'objecte i el llistem:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ kubectl create -f app-svc-np.yaml 
+service/app-svc-nodeport created
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ kubectl get services
+NAME               TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+app-svc-nodeport   NodePort    10.108.23.68   <none>        80:30123/TCP   39s
+kubernetes         ClusterIP   10.96.0.1      <none>        443/TCP        14h
+```
+
+Podem veure a com ara el TYPE del Service indica que és un NodePort i a l'apartat "PORT(S)" podem veure l'enrutació de ports del Service al node.
+
+Si amb els Pods del Replication Controller encesos fem un `curl` a l'IP del node i al port 30123, podem veure que ja podem accedir a un pod del clúster desde fora:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ kubectl get pods
+NAME           READY   STATUS    RESTARTS   AGE
+app-rc-cqh55   1/1     Running   0          4m24s
+app-rc-g6nmp   1/1     Running   0          4m24s
+app-rc-t7p4c   1/1     Running   0          4m24s
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ minikube ip
+192.168.49.2
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ curl -s 192.168.49.2:30123
+You've hit app-rc-cqh55
+```
+
+Si fem un parell de cops la comanda `curl` podem veure com el Service selecciona un pod a l'atzar:
+
+```
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ curl -s 192.168.49.2:30123
+You've hit app-rc-cqh55
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ curl -s 192.168.49.2:30123
+You've hit app-rc-g6nmp
+a184311jq@a184311jq-VirtualBox:~/kubernetes/arxius/services$ curl -s 192.168.49.2:30123
+You've hit app-rc-t7p4c
+```
 ---
 
 #### Què és un Deployment?
