@@ -233,6 +233,9 @@ a184311jq@PC:~/kubernetes$ minikube stop
 🛑  2 nodes stopped.
 ```
 
+Per poder treballar amb `minikube`, s'ha de tenir instal·lat un *software* de contenidors (com per exemple Docker) i l'eina de CLI `kubectl`.
+
+
 ---
 
 ### Què és `kubectl` ?
@@ -704,7 +707,7 @@ El nostre objectiu final és poder interactuar amb els *pods* des de fora del cl
 
 Aquest és un exemple d'arxiu YAML d'un objecte *service* de tipus NodePort.
 
-> [app-svc-nd.yaml](./arxius/services/app-svc-nd.yaml)
+> [app-svc-np.yaml](./arxius/services/app-svc-np.yaml)
 
 ```
 apiVersion: v1
@@ -840,7 +843,7 @@ a184311jq@PC:~/kubernetes/arxius/deployments$ kubectl rollout status deployment 
 deployment "app-deployment" successfully rolled out
 ```
 
-Un cop sabem que el *deployment* s'ha creat correctament, podem revisar els *replication sets* i els *pods*:
+Un cop sabem que el *deployment* s'ha creat correctament, podem revisar els *replication sets* i els *pods*.
 
 ```
 a184311jq@PC:~/kubernetes/arxius/deployments$ kubectl get rs
@@ -963,7 +966,7 @@ Error from server (AlreadyExists): error when creating "app-manual.yaml": pods "
 ```
 
 Per defecte al arrencar el clúster de minikube, es crea el *namespace* `default` i aquí és on es creen quasi tots els objectes de l'API.
-Minikube també crea un *namespace* propi per executar tots els processos interns.
+Minikube també crea tres *namespaces* propis per executar tots els processos interns.
 
 Podem veure els *namespaces* executant la següent ordre:
 
@@ -977,7 +980,7 @@ kube-public       Active   22h
 kube-system       Active   22h
 ```
 
-Es poden crear *namespaces* diferents a `default`. Veiem un exemple d'arxiu YAML d'un objecte *namespace*:
+Per poder crear *namespaces* diferents a `default`, veiem un exemple d'arxiu YAML d'un objecte *namespace*:
 
 > [custom-namespace.yaml](./arxius/namespaces/custom-namespace.yaml)
 
