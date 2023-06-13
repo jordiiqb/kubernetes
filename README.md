@@ -7,7 +7,7 @@
 
 ### Què és Kubernetes?  
   
-Kubernetes és un sistema de *software* de codi obert que serveix per a automatitzar la implementació i gestió de sistemes d'aplicació complexos a gran escala, compostos per processos informàtics que s'executen en *contaniers*.  
+Kubernetes és un sistema de *software* de codi obert que serveix per a automatitzar la implementació i gestió de sistemes d'aplicació complexos a gran escala, compostos per processos informàtics que s'executen en *contenidors*.  
   
 Kubernetes permet executar aplicacions de *software* en milers de nodes d'ordinadors  
 com si tots aquests nodes fossin un de molt gra. Això permet que s'abstregui la infraestructura subjacent i fent que se simplifiqui el desenvolupament, el desplegament i la gestió.
